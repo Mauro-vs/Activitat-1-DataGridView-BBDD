@@ -35,6 +35,7 @@
             this.menuToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.gbIngresos = new System.Windows.Forms.GroupBox();
+            this.checkBoxAlta = new System.Windows.Forms.CheckBox();
             this.btnEditar = new System.Windows.Forms.Button();
             this.btnBorrar = new System.Windows.Forms.Button();
             this.btnAgregar = new System.Windows.Forms.Button();
@@ -52,7 +53,6 @@
             this.toolStripAGREGAR = new System.Windows.Forms.ToolStripButton();
             this.toolStripBORRAR = new System.Windows.Forms.ToolStripButton();
             this.toolStripEDITAR = new System.Windows.Forms.ToolStripButton();
-            this.checkBoxAlta = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.gbIngresos.SuspendLayout();
@@ -94,7 +94,7 @@
             // menuToolStripMenuItem
             // 
             this.menuToolStripMenuItem.Name = "menuToolStripMenuItem";
-            this.menuToolStripMenuItem.Size = new System.Drawing.Size(270, 36);
+            this.menuToolStripMenuItem.Size = new System.Drawing.Size(239, 36);
             this.menuToolStripMenuItem.Text = "Volver a Menu";
             this.menuToolStripMenuItem.Click += new System.EventHandler(this.menuToolStripMenuItem_Click);
             // 
@@ -142,6 +142,18 @@
             this.gbIngresos.TabIndex = 0;
             this.gbIngresos.TabStop = false;
             this.gbIngresos.Text = "Añadir Ingresos";
+            // 
+            // checkBoxAlta
+            // 
+            this.checkBoxAlta.AutoSize = true;
+            this.checkBoxAlta.Font = new System.Drawing.Font("Segoe UI Semibold", 10F, System.Drawing.FontStyle.Bold);
+            this.checkBoxAlta.Location = new System.Drawing.Point(225, 187);
+            this.checkBoxAlta.Name = "checkBoxAlta";
+            this.checkBoxAlta.Size = new System.Drawing.Size(136, 32);
+            this.checkBoxAlta.TabIndex = 16;
+            this.checkBoxAlta.Text = "Dar de alta";
+            this.checkBoxAlta.UseVisualStyleBackColor = true;
+            this.checkBoxAlta.CheckedChanged += new System.EventHandler(this.checkBoxAlta_CheckedChanged);
             // 
             // btnEditar
             // 
@@ -321,7 +333,7 @@
             this.toolStripBORRAR.Image = ((System.Drawing.Image)(resources.GetObject("toolStripBORRAR.Image")));
             this.toolStripBORRAR.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripBORRAR.Name = "toolStripBORRAR";
-            this.toolStripBORRAR.Size = new System.Drawing.Size(34, 33);
+            this.toolStripBORRAR.Size = new System.Drawing.Size(34, 28);
             this.toolStripBORRAR.Text = "Borrar";
             this.toolStripBORRAR.Click += new System.EventHandler(this.toolStripBORRAR_Click);
             // 
@@ -331,21 +343,9 @@
             this.toolStripEDITAR.Image = ((System.Drawing.Image)(resources.GetObject("toolStripEDITAR.Image")));
             this.toolStripEDITAR.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripEDITAR.Name = "toolStripEDITAR";
-            this.toolStripEDITAR.Size = new System.Drawing.Size(34, 33);
+            this.toolStripEDITAR.Size = new System.Drawing.Size(34, 28);
             this.toolStripEDITAR.Text = "Editar";
             this.toolStripEDITAR.Click += new System.EventHandler(this.toolStripEDITAR_Click);
-            // 
-            // checkBoxAlta
-            // 
-            this.checkBoxAlta.AutoSize = true;
-            this.checkBoxAlta.Font = new System.Drawing.Font("Segoe UI Semibold", 10F, System.Drawing.FontStyle.Bold);
-            this.checkBoxAlta.Location = new System.Drawing.Point(225, 187);
-            this.checkBoxAlta.Name = "checkBoxAlta";
-            this.checkBoxAlta.Size = new System.Drawing.Size(107, 32);
-            this.checkBoxAlta.TabIndex = 16;
-            this.checkBoxAlta.Text = "Dar alta";
-            this.checkBoxAlta.UseVisualStyleBackColor = true;
-            this.checkBoxAlta.CheckedChanged += new System.EventHandler(this.checkBoxAlta_CheckedChanged);
             // 
             // FrmIngresos
             // 

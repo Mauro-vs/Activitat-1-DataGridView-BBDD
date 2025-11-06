@@ -95,7 +95,7 @@ namespace Activitat_1_DataGridView_mauro
             }
             else
             {
-                Ingreso nuevoIngreso = new Ingreso // Crear un nuevo ingreso con los datos del formulario
+                Ingreso nuevoIngreso = new Ingreso
                 {
                     FechaIngreso = dtpIngreso.Value,
                     Motivo = txtMotivo.Text,
@@ -103,7 +103,7 @@ namespace Activitat_1_DataGridView_mauro
                     Habitacion = txtHabitacion.Text
                 };
 
-                pacienteActual.Ingresos.Add(nuevoIngreso); // Agregar el nuevo ingreso a la lista del paciente actual
+                pacienteActual.Ingresos.Add(nuevoIngreso); 
             }
 
             
@@ -125,12 +125,22 @@ namespace Activitat_1_DataGridView_mauro
             {
                 var ingresoSelec = (Ingreso)dataGridView1.CurrentRow.DataBoundItem;
 
-                // Actualizar los datos del ingreso seleccionado con los nuevos valores del formulario
-                ingresoSelec.Motivo = txtMotivo.Text;
-                ingresoSelec.Especialidad = txtEspecialidad.Text;
-                ingresoSelec.Habitacion = txtHabitacion.Text;
-                ingresoSelec.FechaIngreso = dtpIngreso.Value;
-                ingresoSelec.FechaAlta = dtpAlta.Value;
+                if (checkBoxAlta.Checked)
+                {
+                    // Actualizar los datos del ingreso seleccionado con los nuevos valores del formulario
+                    ingresoSelec.Motivo = txtMotivo.Text;
+                    ingresoSelec.Especialidad = txtEspecialidad.Text;
+                    ingresoSelec.Habitacion = txtHabitacion.Text;
+                    ingresoSelec.FechaIngreso = dtpIngreso.Value;
+                    ingresoSelec.FechaAlta = dtpAlta.Value;
+                }
+                else
+                {
+                    ingresoSelec.Motivo = txtMotivo.Text;
+                    ingresoSelec.Especialidad = txtEspecialidad.Text;
+                    ingresoSelec.Habitacion = txtHabitacion.Text;
+                    ingresoSelec.FechaIngreso = dtpIngreso.Value;
+                }
 
                 btnAgregar.Visible = true; // Oculta el botón de agregar
                 btnAgregar.Enabled = true; // Deshabilita el botón de agregar
