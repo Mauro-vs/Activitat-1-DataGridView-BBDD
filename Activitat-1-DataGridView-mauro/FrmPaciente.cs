@@ -234,10 +234,6 @@ namespace Activitat_1_DataGridView_mauro
                 }
                 pacienteActual.Edad = edad;
 
-                pacienteActual.Nombre = txtNombre.Text;
-                pacienteActual.Apellidos = txtApellido.Text;
-                pacienteActual.Edad = edad;
-
                 dataGridView1.DataSource = null;
                 dataGridView1.DataSource = listPacientes;
 
