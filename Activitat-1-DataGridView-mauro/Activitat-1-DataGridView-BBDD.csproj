@@ -110,5 +110,8 @@
   <ItemGroup>
     <None Include="Resources\trash-can_115312 %281%29.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="createSQL.sql" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
