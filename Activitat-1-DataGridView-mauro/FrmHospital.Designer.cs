@@ -61,7 +61,7 @@
             this.pantallasToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(926, 38);
+            this.menuStrip1.Size = new System.Drawing.Size(926, 36);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             this.menuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip1_ItemClicked);
@@ -99,9 +99,9 @@
             this.toolStripBORRAR,
             this.toolStripEDITAR,
             this.toolStripLISTAR});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 38);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 36);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(926, 38);
+            this.toolStrip1.Size = new System.Drawing.Size(926, 33);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -111,7 +111,7 @@
             this.toolStripAGREGAR.Image = ((System.Drawing.Image)(resources.GetObject("toolStripAGREGAR.Image")));
             this.toolStripAGREGAR.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripAGREGAR.Name = "toolStripAGREGAR";
-            this.toolStripAGREGAR.Size = new System.Drawing.Size(34, 33);
+            this.toolStripAGREGAR.Size = new System.Drawing.Size(34, 28);
             this.toolStripAGREGAR.Text = "Agregar";
             this.toolStripAGREGAR.Click += new System.EventHandler(this.toolStripAGREGAR_Click);
             // 
@@ -253,6 +253,7 @@
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Location = new System.Drawing.Point(69, 329);
             this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersWidth = 62;
             this.dataGridView1.RowTemplate.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.dataGridView1.RowTemplate.DefaultCellStyle.BackColor = System.Drawing.Color.SkyBlue;
@@ -281,6 +282,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "IngresosHospitalarios";
             this.Text = "Ingresos Hospitalarios";
+            this.Activated += new System.EventHandler(this.IngresosHospitalarios_Activated);
             this.Load += new System.EventHandler(this.IngresosHospitalarios_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();

@@ -1,86 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
 using System.Windows.Forms;
 
 namespace Activitat_1_DataGridView_mauro
 {
     public partial class IngresosHospitalarios : Form
     {
-
+        string cadena = ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
         private void IngresosHospitalarios_Load(object sender, EventArgs e)
         {
         }
 
-        // Lista con datos de ejemplo
-        private List<Paciente> Pacientes { get; set; } = new List<Paciente> {
-            new Paciente {
-                Nombre = "Ana",
-                Apellidos = "García López",
-                Edad = 32,
-                Ingresos = new List<Ingreso> {
-                    new Ingreso {
-                        FechaIngreso = new DateTime(2023, 1, 15, 9, 30, 0), // 15 de enero de 2023 a las 09:30:00
-                        FechaAlta = new DateTime(2023, 1, 25, 17, 45, 0),   // 25 de enero de 2023 a las 17:45:00
-                        Motivo = "Apendicitis",
-                        Especialidad = "Cirugía",
-                        Habitacion = "101A"
-                    },
-                    new Ingreso {
-                        FechaIngreso = new DateTime(2024, 4, 10, 8, 15, 0),
-                        FechaAlta = null,
-                        Motivo = "Neumonía",
-                        Especialidad = "Neumología",
-                        Habitacion = "202B"
-                    }
-                }
-            },
-            new Paciente {
-                Nombre = "Luis",
-                Apellidos = "Martínez Pérez",
-                Edad = 45,
-                Ingresos = new List<Ingreso> {
-                    new Ingreso {
-                        FechaIngreso = new DateTime(2024, 5, 5, 10, 0, 0),
-                        FechaAlta = new DateTime(2024, 5, 15, 18, 30, 0),
-                        Motivo = "Fractura de pierna",
-                        Especialidad = "Traumatología",
-                        Habitacion = "303C"
-                    }
-                }
-            },
-            new Paciente {
-                Nombre = "Marta",
-                Apellidos = "Sánchez Ruiz",
-                Edad = 27,
-                Ingresos = new List<Ingreso> {
-                    new Ingreso {
-                        FechaIngreso = new DateTime(2024, 2, 20, 6, 45, 0),
-                         FechaAlta = new DateTime(2024, 3, 1, 11, 20, 0),
-                         Motivo = "Parto",
-                         Especialidad = "Obstetricia",
-                         Habitacion = "404D"
-                    },
-                    new Ingreso {
-                        FechaIngreso = new DateTime(2024, 6, 12, 14, 10, 0),
-                        FechaAlta = null,
-                        Motivo = "Migraña severa",
-                        Especialidad = "Neurología",
-                        Habitacion = "505E"
-                    },
-                    new Ingreso {
-                        FechaIngreso = new DateTime(2023, 11, 8, 16, 0, 0), 
-                        FechaAlta = new DateTime(2023, 11, 15, 10, 30, 0),   
-                        Motivo = "Alergia severa",
-                        Especialidad = "Alergología",
-                        Habitacion = "606F"
-                    }
-                }
-            },
-          };
         public IngresosHospitalarios()
         {
             InitializeComponent();
-            
+
             RefrescarDatos();
         }
 
@@ -92,129 +28,114 @@ namespace Activitat_1_DataGridView_mauro
         private void pacientesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AbrirPaciente();
-            Actualizar(Pacientes);
+            //Actualizar(Pacientes);
         }
 
         private void ingresosToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AbrirIngresos();
-            Actualizar(Pacientes);
+            //Actualizar(Pacientes);
         }
 
         private void toolStripAGREGAR_Click(object sender, EventArgs e)
         {
             AbrirPaciente();
-            Actualizar(Pacientes);
+            //Actualizar(Pacientes);
         }
 
         private void toolStripBORRAR_Click(object sender, EventArgs e)
         {
             BorrarPaciente();
-            Actualizar(Pacientes);
+            //Actualizar(Pacientes);
         }
 
         private void toolStripEDITAR_Click(object sender, EventArgs e)
         {
-            if (dataGridView1.CurrentRow != null)
-            {
-                // Recoge el paciente seleccionado en el DataGridView
-                var pacienteSelec = dataGridView1.CurrentRow.DataBoundItem as Paciente;
-
-                if (pacienteSelec != null)
-                {
-                    AbrirPacienteEditar(pacienteSelec.Id);
-                    Actualizar(Pacientes);
-                }
-            }
-            else
-            {
-                MessageBox.Show("Seleccione un paciente para editar.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            AbrirPacienteEditar();
+            //Actualizar(Pacientes);
         }
 
         private void toolStripLISTAR_Click(object sender, EventArgs e)
         {
             AbrirIngresos();
-            Actualizar(Pacientes);
+            //Actualizar(Pacientes);
         }
 
         private void btnAgregar_Click(object sender, EventArgs e)
         {
             AbrirPaciente();
-            Actualizar(Pacientes);
+            //Actualizar(Pacientes);
         }
 
         private void btnBorrar_Click(object sender, EventArgs e)
         {
             BorrarPaciente();
-            Actualizar(Pacientes);
+            //Actualizar(Pacientes);
         }
 
         private void btnListar_Click(object sender, EventArgs e)
         {
             AbrirIngresos();
-            Actualizar(Pacientes);
+            //Actualizar(Pacientes);
         }
 
         private void btnEditar_Click(object sender, EventArgs e)
         {
-            if (dataGridView1.CurrentRow != null)
-            {
-                // Recoge el paciente seleccionado en el DataGridView
-                var pacienteSelec = dataGridView1.CurrentRow.DataBoundItem as Paciente;
-
-                if (pacienteSelec != null)
-                {
-                    AbrirPacienteEditar(pacienteSelec.Id);
-                    Actualizar(Pacientes);
-                }
-            }
-            else
-            {
-                MessageBox.Show("Seleccione un paciente para editar.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            AbrirPacienteEditar();
+            //Actualizar(Pacientes);
         }
 
         private void AbrirPaciente()
         {
-            var frm = new FrmPaciente(Pacientes, null, this);
+            FrmPaciente frm = new FrmPaciente(null, this);
             frm.ShowDialog();
         }
 
-        private void AbrirPacienteEditar(int id)
+        private void AbrirPacienteEditar()
         {
-            if (dataGridView1.CurrentRow.DataBoundItem != null)
+            if (dataGridView1.CurrentRow != null)
             {
-                // Crea la variable pacienteSelec y se lo pasa a FrmPaciente para editarlo
-                Paciente pacienteSelec = (Paciente)dataGridView1.CurrentRow.DataBoundItem;
-                if (pacienteSelec != null)
+                DataRowView row = (DataRowView)dataGridView1.CurrentRow.DataBoundItem;
+
+                if (row != null)
                 {
-                    var frm = new FrmPaciente(Pacientes, pacienteSelec, this);
+                    int pacienteId = (int)row["id"];
+                    
+                    Paciente pacienteSelec = new Paciente { Id = pacienteId };
+
+                    FrmPaciente frm = new FrmPaciente(pacienteSelec, this);
                     frm.ShowDialog();
+
+                    RefrescarDatos();
+                                      
                 }
             }
             else
             {
-                MessageBox.Show("Seleccione un paciente para editar.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Seleccione un paciente para editar", "ERROR",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void AbrirIngresos()
         {
-            if (dataGridView1.CurrentRow.DataBoundItem != null)
+            if (dataGridView1.CurrentRow == null)
             {
-                Paciente pacienteSelec = (Paciente)dataGridView1.CurrentRow.DataBoundItem;
-                if (pacienteSelec != null)
-                {
-                    var frm = new FrmIngresos(pacienteSelec, null);
-                    frm.ShowDialog();
-                }
+                MessageBox.Show("Seleccione un paciente para ver sus ingresos.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
-            else
-            {
-                MessageBox.Show("Seleccione un paciente para ver sus ingresos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+
+            // Obtener el ID del paciente seleccionado
+            int pacienteId = (int)dataGridView1.CurrentRow.Cells["id"].Value;
+
+            // Solo envías el ID
+            Paciente pacienteSelec = new Paciente { Id = pacienteId };
+
+            FrmIngresos frm = new FrmIngresos(pacienteSelec, null);
+            frm.ShowDialog();
         }
+
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -226,7 +147,9 @@ namespace Activitat_1_DataGridView_mauro
             {
                 // "CurrentRow" es la fila seleccionada por el usuario.
                 // "DataBoundItem" es el objeto original que está enlazado a esa fila.
-                var pacienteSelec = (Paciente)dataGridView1.CurrentRow.DataBoundItem;
+                int pacienteId = (int)dataGridView1.CurrentRow.Cells[0].Value;
+
+                Paciente pacienteSelec = new Paciente { Id = pacienteId };
                 if (pacienteSelec != null)
                 {
                     var confirmResult = MessageBox.Show($"¿Estás seguro de que deseas borrar al paciente {pacienteSelec.Nombre} {pacienteSelec.Apellidos}?",
@@ -234,10 +157,18 @@ namespace Activitat_1_DataGridView_mauro
                                                          MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                     if (confirmResult == DialogResult.Yes)
                     {
-                        Pacientes.Remove(pacienteSelec);
+                        using (SqlConnection conexion = new SqlConnection(cadena))
+                        {
+                            conexion.Open();
+                            // Genera una consulta para eliminar el paciente seleccionado
+                            SqlCommand cmd = new SqlCommand("DELETE FROM Paciente WHERE Id = @Id", conexion);
+                            // Cogue el Id del paciente seleccionado
+                            cmd.Parameters.AddWithValue("@Id", pacienteSelec.Id);
+                            // Ejecuta el comando
+                            cmd.ExecuteNonQuery();
+                        }
 
                         RefrescarDatos();
-                        Actualizar(Pacientes);
                     }
                 }
             }
@@ -253,12 +184,24 @@ namespace Activitat_1_DataGridView_mauro
 
         private void RefrescarDatos()
         {
-            dataGridView1.DataSource = null;
-            dataGridView1.DataSource = Pacientes;
+            using (SqlConnection conexion = new SqlConnection(cadena))
+            {
+                // Se genera la consulta para obtener los datos de la tabla Pacientes
+                SqlDataAdapter da = new SqlDataAdapter("SELECT * FROM Paciente", conexion);
+                // Se genera el comando para actualizar los datos
+                SqlCommandBuilder cb = new SqlCommandBuilder(da);
+                // Se crea el DataTable para almacenar los datos
+                DataTable dt = new DataTable();
+
+                dt.Clear();
+                da.Fill(dt);
+
+                dataGridView1.DataSource = dt;
+            }
         }
-        public void Actualizar(List<Paciente> pacientes)
+
+        private void IngresosHospitalarios_Activated(object sender, EventArgs e)
         {
-            pacientes = Pacientes;
             RefrescarDatos();
         }
     }

@@ -1,13 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
 using System.Windows.Forms;
 
 namespace Activitat_1_DataGridView_mauro
 {
     public partial class FrmIngresos : Form
     {
+        string cadena = ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
+
         private Paciente pacienteActual;
-        private List<Ingreso> Ingresos { get; set; } = new List<Ingreso>();
 
         public FrmIngresos(Paciente paciente, Ingreso ingresos)
         {
@@ -17,13 +20,12 @@ namespace Activitat_1_DataGridView_mauro
 
             dtpAlta.Enabled = false;
 
-            lblTitulo.Text = $"Ingresos del Paciente {pacienteActual.Nombre} {pacienteActual.Apellidos}"; // Actualiza el nombre del paciente en el titulo
+            RefrescarDatosIngresos();
         }
-        
+
         private void FrmIngresos_Load(object sender, EventArgs e)
         {
-            dataGridView1.DataSource = null;
-            dataGridView1.DataSource = pacienteActual.Ingresos;
+            RefrescarDatosIngresos();
         }
         private void btnAgregar_Click(object sender, EventArgs e)
         {
@@ -58,18 +60,26 @@ namespace Activitat_1_DataGridView_mauro
 
         private void BorrarIngreso()
         {
-            if (dataGridView1.CurrentRow.DataBoundItem != null)
+            if (dataGridView1.CurrentRow == null)
+                return;
+
+            int ingresoId = Convert.ToInt32(dataGridView1.CurrentRow.Cells["id"].Value);
+
+            var confirmResult = MessageBox.Show($"¿Estás seguro de que deseas borrar el ingreso?", "Confirmar borrado", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (confirmResult == DialogResult.Yes)
             {
-                var ingresoSelec = (Ingreso)dataGridView1.CurrentRow.DataBoundItem;
-                // Confirmar el borrado
-                var resultado = MessageBox.Show($"¿Está seguro que desea borrar el ingreso por {ingresoSelec.Motivo}?", "Confirmar borrado", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                if (resultado == DialogResult.Yes)
+                using (SqlConnection conexion = new SqlConnection(cadena))
                 {
-                    pacienteActual.Ingresos.Remove(ingresoSelec);
-                    dataGridView1.DataSource = null;
-                    dataGridView1.DataSource = pacienteActual.Ingresos;
+                    string sql = "DELETE FROM Ingresos WHERE id = @id";
+
+                    SqlCommand cmd = new SqlCommand(sql, conexion);
+                    cmd.Parameters.AddWithValue("@id", ingresoId);
+
+                    conexion.Open();
+                    cmd.ExecuteNonQuery();
                 }
             }
+            RefrescarDatosIngresos();
         }
 
         private void AgregarIngreso()
@@ -82,113 +92,103 @@ namespace Activitat_1_DataGridView_mauro
                 return;
             }
 
-            if (checkBoxAlta.Checked)
+            using (SqlConnection conexion = new SqlConnection(cadena))
             {
-                Ingreso nuevoIngreso = new Ingreso // Crear un nuevo ingreso con los datos del formulario
+                conexion.Open();
+                if (checkBoxAlta.Checked)
                 {
-                    FechaIngreso = dtpIngreso.Value,
-                    FechaAlta = dtpAlta.Value,
-                    Motivo = txtMotivo.Text,
-                    Especialidad = txtEspecialidad.Text,
-                    Habitacion = txtHabitacion.Text
-                };
+                    string sql = "INSERT INTO Ingresos (fecha_ingreso, fecha_alta, motivo, especialidad, habitacion, id_paciente) " +
+                             "VALUES (@ingreso, @alta, @motivo, @esp, @hab, @id)";
 
-                pacienteActual.Ingresos.Add(nuevoIngreso); // Agregar el nuevo ingreso a la lista del paciente actual
-            }
-            else
-            {
-                Ingreso nuevoIngreso = new Ingreso
+                    SqlCommand cmd = new SqlCommand(sql, conexion);
+                    cmd.Parameters.AddWithValue("@ingreso", dtpIngreso.Value);
+                    cmd.Parameters.AddWithValue("@alta", dtpAlta.Value);
+                    cmd.Parameters.AddWithValue("@motivo", txtMotivo.Text);
+                    cmd.Parameters.AddWithValue("@esp", txtEspecialidad.Text);
+                    cmd.Parameters.AddWithValue("@hab", txtHabitacion.Text);
+                    cmd.Parameters.AddWithValue("@id", pacienteActual.Id);
+                    cmd.ExecuteNonQuery();
+                }
+                else
                 {
-                    FechaIngreso = dtpIngreso.Value,
-                    Motivo = txtMotivo.Text,
-                    Especialidad = txtEspecialidad.Text,
-                    Habitacion = txtHabitacion.Text
-                };
+                    string sql = "INSERT INTO Ingresos (fecha_ingreso, motivo, especialidad, habitacion, id_paciente) " +
+                             "VALUES (@ingreso, @motivo, @esp, @hab, @id)";
 
-                pacienteActual.Ingresos.Add(nuevoIngreso); 
+                    SqlCommand cmd = new SqlCommand(sql, conexion);
+                    cmd.Parameters.AddWithValue("@ingreso", dtpIngreso.Value);
+                    cmd.Parameters.AddWithValue("@motivo", txtMotivo.Text);
+                    cmd.Parameters.AddWithValue("@esp", txtEspecialidad.Text);
+                    cmd.Parameters.AddWithValue("@hab", txtHabitacion.Text);
+                    cmd.Parameters.AddWithValue("@id", pacienteActual.Id);
+                    cmd.ExecuteNonQuery();
+                }
             }
 
-            
-
-            dataGridView1.DataSource = null;
-            dataGridView1.DataSource = pacienteActual.Ingresos;
-
-            // Limpiar los campos del formulario
-            dtpIngreso.Value = DateTime.Now;
-            dtpAlta.Value = DateTime.Now;
-            txtMotivo.Text = "";
-            txtEspecialidad.Text = "";
-            txtHabitacion.Text = "";
+            LimpiarCampos();
+            RefrescarDatosIngresos();
         }
 
         private void EditarIngreso()
         {
-            if (dataGridView1.CurrentRow.DataBoundItem != null)
+            btnAgregar.Visible = false;
+            btnAgregar.Enabled = false;
+            btnEditar.Visible = true;
+            btnEditar.Enabled = true;
+            dtpAlta.Enabled = true;
+            checkBoxAlta.Visible = false;
+            using (SqlConnection conexion = new SqlConnection(cadena))
             {
-                var ingresoSelec = (Ingreso)dataGridView1.CurrentRow.DataBoundItem;
+                string sql = "UPDATE Ingresos SET fecha_ingreso=@ing, fecha_alta=@alta, motivo=@motivo, " +
+                             "especialidad=@esp, habitacion=@hab WHERE id=@id";
 
-                if (checkBoxAlta.Checked)
-                {
-                    // Actualizar los datos del ingreso seleccionado con los nuevos valores del formulario
-                    ingresoSelec.Motivo = txtMotivo.Text;
-                    ingresoSelec.Especialidad = txtEspecialidad.Text;
-                    ingresoSelec.Habitacion = txtHabitacion.Text;
-                    ingresoSelec.FechaIngreso = dtpIngreso.Value;
-                    ingresoSelec.FechaAlta = dtpAlta.Value;
-                }
-                else
-                {
-                    ingresoSelec.Motivo = txtMotivo.Text;
-                    ingresoSelec.Especialidad = txtEspecialidad.Text;
-                    ingresoSelec.Habitacion = txtHabitacion.Text;
-                    ingresoSelec.FechaIngreso = dtpIngreso.Value;
-                }
+                SqlCommand cmd = new SqlCommand(sql, conexion);
 
-                btnAgregar.Visible = true; // Oculta el botón de agregar
-                btnAgregar.Enabled = true; // Deshabilita el botón de agregar
-                btnEditar.Visible = false; // Muestra el botón de editar
-                btnEditar.Enabled = false; // Habilita el botón de editar
+                cmd.Parameters.AddWithValue("@id", dataGridView1.CurrentRow.Cells["id"].Value);
+                cmd.Parameters.AddWithValue("@ing", dtpIngreso.Value);
+                cmd.Parameters.AddWithValue("@alta", dtpAlta.Value);
+                cmd.Parameters.AddWithValue("@motivo", txtMotivo.Text);
+                cmd.Parameters.AddWithValue("@esp", txtEspecialidad.Text);
+                cmd.Parameters.AddWithValue("@hab", txtHabitacion.Text);
 
-                dataGridView1.DataSource = null;
-                dataGridView1.DataSource = pacienteActual.Ingresos;
 
-                // Limpiar los campos del formulario
-                dtpIngreso.Value = DateTime.Now;
-                dtpAlta.Value = DateTime.Now;
-                txtMotivo.Text = "";    
-                txtEspecialidad.Text = "";
-                txtHabitacion.Text = "";
 
+                conexion.Open();
+                cmd.ExecuteNonQuery();
             }
-            else
-            {
-                MessageBox.Show("Seleccione un ingreso para editar.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+
+            LimpiarCampos();
+            RefrescarDatosIngresos();
+
+            btnAgregar.Visible = true;
+            btnAgregar.Enabled = true;
+            btnEditar.Visible = false;
+            btnEditar.Enabled = false;
+            dtpAlta.Enabled = false;
+            checkBoxAlta.Visible = true;
         }
 
         private void toolStripEDITAR_Click(object sender, EventArgs e)
         {
-            if (dataGridView1.CurrentRow.DataBoundItem != null)
+            if (dataGridView1.CurrentRow != null)
             {
-                var ingresoSelec = (Ingreso)dataGridView1.CurrentRow.DataBoundItem; // Obtener el ingreso seleccionado
 
-                // Rellenar los campos del formulario con los datos del ingreso seleccionado
-                txtMotivo.Text = ingresoSelec.Motivo;
-                txtEspecialidad.Text = ingresoSelec.Especialidad;
-                txtHabitacion.Text = ingresoSelec.Habitacion;
-                dtpIngreso.Value = ingresoSelec.FechaIngreso;
-                dtpAlta.Value = ingresoSelec.FechaAlta ?? DateTime.Now;
-
-
+                txtMotivo.Text = dataGridView1.CurrentRow.Cells["motivo"].Value.ToString();
+                txtEspecialidad.Text = dataGridView1.CurrentRow.Cells["especialidad"].Value.ToString();
+                txtHabitacion.Text = dataGridView1.CurrentRow.Cells["habitacion"].Value.ToString();
+                dtpIngreso.Value = Convert.ToDateTime(dataGridView1.CurrentRow.Cells["fecha_ingreso"].Value);
+                if (dataGridView1.CurrentRow.Cells["fecha_alta"].Value != DBNull.Value)
+                {
+                    checkBoxAlta.Checked = true;
+                    dtpAlta.Value = Convert.ToDateTime(dataGridView1.CurrentRow.Cells["fecha_alta"].Value);
+                }
+                else
+                {
+                    checkBoxAlta.Checked = false;
+                }
                 btnAgregar.Visible = false; // Oculta el botón de agregar
                 btnAgregar.Enabled = false; // Deshabilita el botón de agregar
                 btnEditar.Visible = true; // Muestra el botón de editar
                 btnEditar.Enabled = true; // Habilita el botón de editar
-
-                dataGridView1.DataSource = null;
-                dataGridView1.DataSource = pacienteActual.Ingresos;
-
-
             }
             else
             {
@@ -199,8 +199,7 @@ namespace Activitat_1_DataGridView_mauro
         private void btnEditar_Click(object sender, EventArgs e)
         {
             EditarIngreso();
-            dataGridView1.DataSource = null;
-            dataGridView1.DataSource = pacienteActual.Ingresos;
+            RefrescarDatosIngresos();
         }
 
         private void pacientesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -216,13 +215,41 @@ namespace Activitat_1_DataGridView_mauro
             }
             else
             {
-                dtpAlta.Enabled = false;    
+                dtpAlta.Enabled = false;
             }
         }
 
         private void checkBoxAlta_CheckedChanged(object sender, EventArgs e)
         {
             dtpAlta.Enabled = checkBoxAlta.Checked;
+        }
+
+        private void RefrescarDatosIngresos()
+        {
+            using (SqlConnection conexion = new SqlConnection(cadena))
+            {
+                string sql = "SELECT * FROM Ingresos WHERE id_Paciente = @id";
+
+                SqlCommand cmd = new SqlCommand(sql, conexion);
+                cmd.Parameters.AddWithValue("@id", pacienteActual.Id);
+
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+
+                da.Fill(dt);
+
+                dataGridView1.DataSource = dt;
+            }
+        }
+
+        private void LimpiarCampos()
+        {
+            txtMotivo.Text = "";
+            txtEspecialidad.Text = "";
+            txtHabitacion.Text = "";
+            dtpIngreso.Value = DateTime.Now;
+            dtpAlta.Value = DateTime.Now;
+            checkBoxAlta.Checked = false;
         }
     }
 }
